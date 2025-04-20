@@ -69,24 +69,21 @@ def plot_regular_with_fit(intensities_by_type: list[list[float]]):
     angles_deg_list = [
         [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220],  # No Angle
         [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220],  # 30°
-        [0, 10, 20, 30, 40, 120, 110, 100, 180, 190, 200, 210, 220],  # 50°
+
+      #  [0, 10, 20, 30, 40, 120, 110, 100, 180, 190, 200, 210, 220],  # 50° (disabled)
     ]
 
-    initial_guesses = [
-        [-0.01, 0, 0.0],  # No Angle
-        [-0.1, 0.87, 0.1],   # 30°
-        [-0.1, -0.13, 0.2],  # 50°
-    ]
-    bounds_list = [
-        ([-0.1, -0.1, -1], [0.001, 1, 0]),  # No Angle
-        ([-1, -np.pi, -np.inf], [-0.0001, np.pi, np.inf]),  # 30°
-        ([-1, -np.pi, -np.inf], [-0.0001, np.pi, np.inf]),  # 50°
-    ]
-
-    for i, intensities in enumerate(intensities_by_type):
+    for i in range(2):  # Only No Angle and 30°
         angles_deg = angles_deg_list[i]
-        initial_guess = initial_guesses[i]
-        lower_bounds, upper_bounds = bounds_list[i]
+        intensities = intensities_by_type[i]
+        label = LABELS[i]
+        color = DATA_COLOR[i]
+
+        def cos2_fit_func(x, a, b, c):
+            return a * np.cos(np.deg2rad(x - b))**2 + c
+
+        initial_guess = [0.001, 90, 0]
+        bounds = ([0, 0, -1], [1, 180, 1])
 
         try:
             popt, _ = curve_fit(
@@ -94,23 +91,20 @@ def plot_regular_with_fit(intensities_by_type: list[list[float]]):
                 angles_deg,
                 intensities,
                 p0=initial_guess,
-                bounds=(lower_bounds, upper_bounds)
+                bounds=bounds
             )
         except RuntimeError:
-            print(f"Fit failed for {LABELS[i]}")
+            print(f"Fit failed for {label}")
             continue
 
-        fitted_vals = cos2_fit_func(angles_deg, *popt)
+        fine_x = np.linspace(min(angles_deg), max(angles_deg), 500)
+        fitted_vals = cos2_fit_func(fine_x, *popt)
 
-        # Plot data and fit
-        plt.plot(angles_deg, intensities, 'o', label=f"{LABELS[i]} Data", color=DATA_COLOR[i])
-        plt.plot(angles_deg, fitted_vals, '-', label=f"{LABELS[i]} Fit", color=DATA_COLOR[i])
+        plt.scatter(angles_deg, intensities, label=f"{label} Data", color=color)
+        plt.plot(fine_x, fitted_vals, label=f"{label} Fit", color=color)
 
-        # Print fitted parameters
         a, b, c = popt
-        #phi_deg = np.rad2deg(phi_rad)
-        #print(f"{LABELS[i]} Fit Params:\n  Amplitude a = {a:.3f}\n  Phase φ = {phi_deg:.2f}°\n  Offset c = {c:.3f}\n")
-        print(a, b, c)
+        print(f"{label} Fit Params:\n  a = {a:.6f}\n  center = {b:.2f}°\n  offset = {c:.6f}")
 
     plt.xlabel(DEG_LABEL, fontsize=AXIS_LABEL_SIZE)
     plt.ylabel(INTENSITY_LABEL, fontsize=AXIS_LABEL_SIZE)
@@ -121,22 +115,82 @@ def plot_regular_with_fit(intensities_by_type: list[list[float]]):
 
 
 
-def plot_polar(intensities_by_type: list[list[float]]):
-    angles_rad_all = [np.deg2rad(np.linspace(0, 180, len(intensities))) for intensities in intensities_by_type]
 
+def plot_polar(intensities_by_type: list[list[float]]):
     fig = plt.figure(figsize=FIGURE_SIZE)
     ax = fig.add_subplot(111, projection='polar')
 
-    for i, (angles_rad, intensities) in enumerate(zip(angles_rad_all, intensities_by_type)):
-        ax.plot(angles_rad, intensities, 'o-', label=LABELS[i], color=DATA_COLOR[i])
+    for i, intensities in enumerate(intensities_by_type):
+        if LABELS[i] == "50° Angle":
+            continue
 
-    ax.set_title("Polar Plot", fontsize=GRAPH_TITLE_SIZE)
+        angles_deg = np.linspace(0, 180, len(intensities))
+        angles_rad = np.deg2rad(angles_deg)
+
+        # Mirror the data for 180°–360°
+        mirrored_angles = angles_rad + np.pi
+        full_angles = np.concatenate([angles_rad, mirrored_angles])
+        full_intensities = np.concatenate([intensities, intensities])
+
+        ax.plot(full_angles, full_intensities, 'o-', label=LABELS[i], color=DATA_COLOR[i])
+
+    ax.set_title("Polar Plot (0–360°)", fontsize=GRAPH_TITLE_SIZE)
     ax.legend(loc='upper right')
     plt.tight_layout()
     plt.show()
+
 
 folder_names = ["no angle", "30 angle", "50 angle"]
 intensities = [extract_averages_from_folder(name) for name in folder_names]
 
 plot_regular_with_fit(intensities)
-# plot_polar(intensities)
+#plot_polar(intensities[:2])
+#######################################33
+
+def plot_single_fit(intensities: list[float], angles_deg: list[float], label: str):
+    plt.figure(figsize=FIGURE_SIZE)
+
+    def cos2_fit_func(x, a, center, offset):
+        return a * np.cos(np.deg2rad(x - center))**2 + offset
+
+    initial_guess = [0.001, 90, 0]  # Try amplitude ~0.001, center at 90°, no offset
+    bounds = ([0, 0, -1], [1, 180, 1])  # Amplitude between 0 and 1, center 0–180°
+
+    try:
+        popt, _ = curve_fit(
+            cos2_fit_func,
+            angles_deg,
+            intensities,
+            p0=initial_guess,
+            bounds=bounds
+        )
+    except RuntimeError:
+        print(f"Fit failed for {label}")
+        return
+
+    fine_x = np.linspace(min(angles_deg), max(angles_deg), 500)
+    fitted_vals = cos2_fit_func(fine_x, *popt)
+
+    plt.scatter(angles_deg, intensities, label=f"{label} Data", color='blue')
+    plt.plot(fine_x, fitted_vals, label=f"{label} Fit", color='red')
+
+    a, b, c = popt
+    print(f"{label} Fit Params:\n  a = {a:.6f}\n  center = {b:.2f}°\n  offset = {c:.6f}")
+
+    plt.xlabel(DEG_LABEL, fontsize=AXIS_LABEL_SIZE)
+    plt.ylabel(INTENSITY_LABEL, fontsize=AXIS_LABEL_SIZE)
+    plt.title(f"{label} - Cos² Fit", fontsize=GRAPH_TITLE_SIZE)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+angles_30 = [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220]
+intensities_30 = intensities[1]
+initial_guess_30 = [-0.01, 0.617, 0.001]
+bounds_30 = ([-1, -np.pi, -np.inf], [-0.0001, np.pi, np.inf])
+
+angles_30 = [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220]
+intensities_30 = intensities[1]
+
+#plot_single_fit(intensities_30, angles_30, "30° Angle")
+
