@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from typing import Tuple
+from scipy.optimize import curve_fit
 
 GRAPH_TITLE_SIZE = 20
 INTENSITY_LABEL = 'Intensity [V]'
@@ -19,8 +20,13 @@ AXIS_LABEL_SIZE = 20
 
 matplotlib.use('TkAgg')
 
+def double_polarizers_ff(x, a, b):
+    return a * (np.cos(np.deg2rad(x))) ** 2 + b
+def triple_polarizers_ff(x, a, b):
+    return a * (np.cos(np.deg2rad(x)) * np.sin(np.deg2rad(x))) ** 2 + b
 
-def extract_averages_from_excel(folder_name: str) -> np.ndarray:
+
+def extract_averages_from_folder(folder_name: str) -> np.ndarray:
     averages = []
     file_lst = os.listdir(f"{folder_name}")
     file_lst.sort(key=lambda f: int(''.join(filter(str.isdigit, f))) if any(c.isdigit() for c in f) else f)
@@ -39,13 +45,11 @@ def intensity_avarage(file: str) -> float:
 
 
 def plot_double_polarizers(angle_polarizer_list, averages_list, save=False):
-    I0_file = f"double polarizers{os.sep}Measurement3.xlsx"
-    intensity_uncertainty = measurement_uncertainty(I0_file)
+    intensity_uncertainty = measurement_uncertainty(f"double polarizers{os.sep}Measurement3.xlsx")
     angle_uncertainty = ANGLE_UNCERTAINTY
-    I0 = intensity_avarage(I0_file)
+    (A, B), cov_mat = curve_fit(double_polarizers_ff, angle_polarizer_list, averages_list)
     x_values = np.linspace(0, 180, 100)
-    I_values = I0 * (np.cos(np.radians(x_values))) ** 2
-
+    fit_vals = double_polarizers_ff(x_values, A, B)
     # Fake data point
     angle_polarizer_list = np.append(angle_polarizer_list, 60)
     averages_list = np.append(averages_list, 0.00009)
@@ -65,10 +69,14 @@ def plot_double_polarizers(angle_polarizer_list, averages_list, save=False):
         label='Measured Intensity',
         ms=DATA_POINTs_SIZE
     )
-    plt.plot(x_values, I_values, color='black', label=rf'$I = {I0:.2e} \cos^2(\theta)$')
-    plt.xlabel(DEG_LABEL, size=AXIS_LABEL_SIZE)
-    plt.ylabel(INTENSITY_LABEL, size=AXIS_LABEL_SIZE)
-    plt.title('Intensity vs Polarizer Angle', size=GRAPH_TITLE_SIZE)
+    plt.plot(x_values, fit_vals, color='black', label=rf'$I = {A:.2e} \cos^2(\theta) + {B:.2e}$')
+    plot(save, DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    return A, cov_mat[0][0]
+
+def plot(save, xlabel, ylabel, title):
+    plt.xlabel(xlabel, size=AXIS_LABEL_SIZE)
+    plt.ylabel(ylabel, size=AXIS_LABEL_SIZE)
+    plt.title(title, size=GRAPH_TITLE_SIZE)
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
@@ -94,44 +102,32 @@ def measurement_uncertainty(file: str) -> float:
 
 
 def plot_triple_polarizers(angle_polarizer_list, averages_list, save=False):
-    I0_file = f"triple polarizers{os.sep}Measurement1.xlsx"
-    intensity_uncertainty = measurement_uncertainty(I0_file)
+    intensity_uncertainty = measurement_uncertainty(f"triple polarizers{os.sep}Measurement1.xlsx")
     angle_uncertainty = ANGLE_UNCERTAINTY
-    I0 = intensity_avarage(I0_file) * 4  # Maximum intensity measured at 45 degrees which is a quarter of the total intensity
     x_values = np.linspace(0, 100, 100)
-    I_values = I0 * (np.cos(np.radians(x_values)) * np.sin(np.radians(x_values))) ** 2
+    (A, B), cov_mat = curve_fit(triple_polarizers_ff, angle_polarizer_list, averages_list)
+    fit_values = triple_polarizers_ff(x_values, A, B)
     plt.figure(figsize=FIGURE_SIZE)
-    plt.errorbar(
-        angle_polarizer_list,
-        averages_list,
-        xerr=angle_uncertainty,
-        yerr=intensity_uncertainty,
-        fmt='o',
-        color=DATA_COLOR,
-        ecolor=ERRORBARS_COLOR,
-        elinewidth=1.5,
-        capsize=5,
-        capthick=1,
-        label='Measured Intensity',
-        ms=DATA_POINTs_SIZE
-    )
-    plt.plot(x_values, I_values, color=FIT_COLOR, label=rf'$I = {I0:.2e} \cos^2(\theta)\sin^2(\theta)$')
-    plt.xlabel(DEG_LABEL, size=AXIS_LABEL_SIZE)
-    plt.ylabel(INTENSITY_LABEL, size=AXIS_LABEL_SIZE)
-    plt.title('Intensity vs Polarizer Angle', size=GRAPH_TITLE_SIZE)
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    if save:
-        plt.savefig(f"figures{os.sep}triple polarizers.pdf", format="pdf")
-    plt.show()
-
+    # Drifted data point
+    angle_polarizer_list = np.append(angle_polarizer_list, fix_angles(np.array([115], dtype=float), 75, 90))
+    averages_list = np.append(averages_list, intensity_avarage(f"triple polarizers{os.sep}Measurement5.xlsx"))
+    plt.errorbar(angle_polarizer_list, averages_list, xerr=angle_uncertainty, yerr=intensity_uncertainty,fmt='o',color=DATA_COLOR,ecolor=ERRORBARS_COLOR,capsize=5,label='Measured Intensity',ms=DATA_POINTs_SIZE)
+    plt.plot(x_values, fit_values, color=FIT_COLOR, label=rf'$I = {A:.2e} \cos^2(\theta)\sin^2(\theta) + {B:.2e}$')
+    plot(save, DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    return A, cov_mat[0][0]
 
 double_polarizers_angles = np.array([0, 10, 350, 20, 340, 80, 270, 250, 100, 300, 70, 90, 355, 330])
 double_polarizers_angles = fix_angles(double_polarizers_angles, 350, 180)
 
-triple_polarizers_angles = np.array(([120, 125, 130, 140, 115, 100, 165, 170, 180, 160, 150, 135]))
+triple_polarizers_angles = np.array(([120, 125, 130, 140, 100, 165, 170, 180, 160, 150, 135]))
 triple_polarizers_angles = fix_angles(triple_polarizers_angles, 75, 90)  # Max value is 120 degrees so zero is 120 - 45
+print(triple_polarizers_angles)
 if __name__ == "__main__":
-    plot_double_polarizers(double_polarizers_angles, extract_averages_from_excel("double polarizers"), True)
-    plot_triple_polarizers(triple_polarizers_angles, extract_averages_from_excel("triple polarizers"), True)
+    double_polarizers_I0 = intensity_avarage(f"double polarizers{os.sep}Measurement3.xlsx")
+    triple_polarizers_I0 = intensity_avarage(f"triple polarizers{os.sep}Measurement1.xlsx") * 4
+    fitted_I0, fittedI0_err = plot_double_polarizers(double_polarizers_angles, extract_averages_from_folder("double polarizers"), True)
+    print(f"real I0: {double_polarizers_I0:.2e} while fitted I0: {fitted_I0:.2e}±{fittedI0_err:.2e} which is {abs(fitted_I0 - double_polarizers_I0) / fitted_I0:.2%} off")
+    fitted_I0, fittedI0_err = plot_triple_polarizers(triple_polarizers_angles, np.delete(extract_averages_from_folder("triple polarizers"), 4), True) # Maximum intensity measured at 45 degrees which is a quarter of the total intensity
+    print(
+        f"real I0: {triple_polarizers_I0:.2e} while fitted I0: {fitted_I0:.2e}±{fittedI0_err:.2e} which is {abs(fitted_I0 - triple_polarizers_I0) / fitted_I0:.2%} off")
+

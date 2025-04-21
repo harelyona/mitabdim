@@ -1,37 +1,15 @@
-import pandas as pd
 import os
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
 
-from typing import Tuple
+from Malos import *
 
 # Plot constants
-GRAPH_TITLE_SIZE = 20
-INTENSITY_LABEL = 'Intensity [V]'
-DEG_LABEL = "Angle [Deg]"
 DATA_COLOR = ["blue", "green", "red"]
 LABELS = ["No Angle", "30° Angle", "50° Angle"]
-DATA_POINTs_SIZE = 5
-FIGURE_SIZE = (8, 6)
-AXIS_LABEL_SIZE = 20
+
 
 matplotlib.use('TkAgg')
 
 
-def intensity_average(file: str) -> float:
-    df = pd.read_excel(file)
-    # Extract column B starting from the seventh row (index 6 in zero-based index)
-    column_b_values = df.iloc[6:, 1]  # Column B (index 1)
-    # Compute the average and store in the list
-    return column_b_values.mean()
-
-def extract_averages_from_folder(folder_path: str) -> list[float]:
-    files = os.listdir(folder_path)
-    files = [f for f in files if f.endswith(".xlsx")]
-    files.sort(key=lambda f: int(''.join(filter(str.isdigit, f))) if any(c.isdigit() for c in f) else f)
-    return [intensity_average(os.path.join(folder_path, file)) for file in files]
 
 def cos2_fit_func(x, a, b, c):
     return a * np.cos(np.deg2rad(x) - b)**2 + c
@@ -139,11 +117,6 @@ def plot_polar(intensities_by_type: list[list[float]]):
     plt.tight_layout()
     plt.show()
 
-
-folder_names = ["no angle", "30 angle", "50 angle"]
-intensities = [extract_averages_from_folder(name) for name in folder_names]
-
-plot_regular_with_fit(intensities)
 #plot_polar(intensities[:2])
 #######################################33
 
@@ -184,6 +157,11 @@ def plot_single_fit(intensities: list[float], angles_deg: list[float], label: st
     plt.tight_layout()
     plt.show()
 
+
+folder_names = [f"half wave{os.sep}no angle", f"half wave{os.sep}30 angle", f"half wave{os.sep}50 angle"]
+intensities = [extract_averages_from_folder(name) for name in folder_names]
+
+plot_regular_with_fit(intensities)
 angles_30 = [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220]
 intensities_30 = intensities[1]
 initial_guess_30 = [-0.01, 0.617, 0.001]
@@ -192,5 +170,5 @@ bounds_30 = ([-1, -np.pi, -np.inf], [-0.0001, np.pi, np.inf])
 angles_30 = [0, 10, 20, 30, 40, 100, 110, 120, 180, 190, 200, 210, 220]
 intensities_30 = intensities[1]
 
-#plot_single_fit(intensities_30, angles_30, "30° Angle")
+plot_single_fit(intensities_30, angles_30, "30° Angle")
 
