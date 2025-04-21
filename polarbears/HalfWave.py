@@ -7,10 +7,6 @@ DATA_COLOR = ["blue", "green", "red"]
 LABELS = ["No Angle", "30° Angle", "50° Angle"]
 
 
-matplotlib.use('TkAgg')
-
-
-
 def cos2_fit_func(x, a, b, c):
     return a * np.cos(np.deg2rad(x) - b)**2 + c
 

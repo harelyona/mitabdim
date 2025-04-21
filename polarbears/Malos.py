@@ -70,19 +70,21 @@ def plot_double_polarizers(angle_polarizer_list, averages_list, save=False):
         ms=DATA_POINTs_SIZE
     )
     plt.plot(x_values, fit_vals, color='black', label=rf'$I = {A:.2e} \cos^2(\theta) + {B:.2e}$')
-    plot(save, DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    plot(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    if save:
+        plt.savefig(f"figures{os.sep}double polarizers.pdf", format="pdf")
+    plt.show()
+    print(f"b is {B:.2e} pm {cov_mat[1][1]:.2e}")
     return A, cov_mat[0][0]
 
-def plot(save, xlabel, ylabel, title):
+def plot(xlabel, ylabel, title):
     plt.xlabel(xlabel, size=AXIS_LABEL_SIZE)
     plt.ylabel(ylabel, size=AXIS_LABEL_SIZE)
     plt.title(title, size=GRAPH_TITLE_SIZE)
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    if save:
-        plt.savefig(f"figures{os.sep}double polarizers.pdf", format="pdf")
-    plt.show()
+    plt.gca().tick_params(axis='both', which='major', labelsize=15)
 
 
 def fix_angles(angles: np.ndarray, center: int, cycle: int):
@@ -113,7 +115,10 @@ def plot_triple_polarizers(angle_polarizer_list, averages_list, save=False):
     averages_list = np.append(averages_list, intensity_avarage(f"triple polarizers{os.sep}Measurement5.xlsx"))
     plt.errorbar(angle_polarizer_list, averages_list, xerr=angle_uncertainty, yerr=intensity_uncertainty,fmt='o',color=DATA_COLOR,ecolor=ERRORBARS_COLOR,capsize=5,label='Measured Intensity',ms=DATA_POINTs_SIZE)
     plt.plot(x_values, fit_values, color=FIT_COLOR, label=rf'$I = {A:.2e} \cos^2(\theta)\sin^2(\theta) + {B:.2e}$')
-    plot(save, DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    plot(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    if save:
+        plt.savefig(f"figures{os.sep}triple polarizers.pdf", format="pdf")
+    plt.show()
     return A, cov_mat[0][0]
 
 double_polarizers_angles = np.array([0, 10, 350, 20, 340, 80, 270, 250, 100, 300, 70, 90, 355, 330])
