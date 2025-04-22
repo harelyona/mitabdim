@@ -13,7 +13,7 @@ ANGLE_UNCERTAINTY = 0.5
 DATA_COLOR = "blue"
 FIT_COLOR = "black"
 ERRORBARS_COLOR = "lightcoral"
-DATA_POINTs_SIZE = 5
+DATA_POINTs_SIZE = 7
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
 
@@ -62,8 +62,6 @@ def plot_double_polarizers(angle_polarizer_list, averages_list, save=False):
     # Fake data point
     angle_polarizer_list = np.append(angle_polarizer_list, 60)
     averages_list = np.append(averages_list, 0.00009)
-
-    plt.figure(figsize=FIGURE_SIZE)
     plt.errorbar(
         angle_polarizer_list,
         averages_list,
@@ -90,10 +88,13 @@ def plot_config(xlabel, ylabel, title):
     plt.xlabel(xlabel, size=AXIS_LABEL_SIZE)
     plt.ylabel(ylabel, size=AXIS_LABEL_SIZE)
     plt.title(title, size=GRAPH_TITLE_SIZE)
-    #plt.legend()
+    plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.gca().tick_params(axis='both', which='major', labelsize=15)
+    plt.gcf().set_size_inches(FIGURE_SIZE)
+    plt.subplots_adjust(left=0.18)
+
 
 
 def fix_angles(angles: np.ndarray, center: int, cycle: int):
@@ -115,7 +116,7 @@ def plot_triple_polarizers(angle_polarizer_list, averages_list, uncertainties,sa
     x_values = np.linspace(0, 100, 100)
     (A, B), cov_mat = curve_fit(triple_polarizers_ff, angle_polarizer_list, averages_list)
     fit_values = triple_polarizers_ff(x_values, A, B)
-    plt.figure(figsize=FIGURE_SIZE)
+
     # Drifted data point
     angle_polarizer_list = np.append(angle_polarizer_list, fix_angles(np.array([115], dtype=float), 75, 90))
     averages_list = np.append(averages_list, intensity_avarage(f"triple polarizers{os.sep}Measurement5.xlsx"))
@@ -132,11 +133,12 @@ def plot_triple_polarizers(angle_polarizer_list, averages_list, uncertainties,sa
     plt.show()
     return A, cov_mat[0][0]
 
+
 double_polarizers_angles = np.array([0, 10, 350, 20, 340, 80, 270, 250, 100, 300, 70, 90, 355, 330])
 double_polarizers_angles = fix_angles(double_polarizers_angles, 350, 180)
-
 triple_polarizers_angles = np.array(([120, 125, 130, 140, 100, 165, 170, 180, 160, 150, 135]))
 triple_polarizers_angles = fix_angles(triple_polarizers_angles, 75, 90)  # Max value is 120 degrees so zero is 120 - 45
+
 
 if __name__ == "__main__":
     double_polarizers_I0 = intensity_avarage(f"double polarizers{os.sep}Measurement3.xlsx")

@@ -15,18 +15,21 @@ q_wave_angles = np.array([340, 350, 0, 10, 20, 80, 90, 100, 250, 170, 180, 190,]
 if __name__ == "__main__":
     q_wave_uncertainties = extract_uncertainties_from_folder("q wave")[-12:]
     q_wave_intensities = extract_averages_from_folder("q wave")[-12:]
-    q_wave_intensities[0] += 0.000001
-    q_wave_intensities[1] += 0.0000006
-    q_wave_intensities[2] += 0.0000006
-    q_wave_intensities[3] += 0.0000006
-    q_wave_intensities[4] += 0.000001
-    q_wave_intensities[5] += 0.000005
-    q_wave_intensities[np.where(q_wave_angles==80)] -= 0.000006
-    q_wave_intensities[np.where(q_wave_angles==100)] -= 0.000001
-    q_wave_intensities[np.where(q_wave_angles==170)] += 0.000001
-    q_wave_intensities[np.where(q_wave_angles==180)] += 0.000001
-    q_wave_intensities[np.where(q_wave_angles==190)] -= 0.000002
-    q_wave_intensities[np.where(q_wave_angles==20)] += 0.000001
-    q_wave_intensities[np.where(q_wave_angles==350)] += 0.0000005
-    q_wave_intensities[np.where(q_wave_angles==0)] += 0.0000009
-    plot_q_wave(q_wave_angles, q_wave_intensities, q_wave_uncertainties, True)
+    # q_wave_intensities[0] += 0.000001
+    # q_wave_intensities[1] += 0.0000006
+    # q_wave_intensities[2] += 0.0000006
+    # q_wave_intensities[3] += 0.0000006
+    # q_wave_intensities[4] += 0.000001
+    # q_wave_intensities[5] += 0.000005
+    # q_wave_intensities[np.where(q_wave_angles==80)] -= 0.000006
+    # q_wave_intensities[np.where(q_wave_angles==100)] -= 0.000001
+    # q_wave_intensities[np.where(q_wave_angles==170)] += 0.000001
+    # q_wave_intensities[np.where(q_wave_angles==180)] += 0.000001
+    # q_wave_intensities[np.where(q_wave_angles==190)] -= 0.000002
+    # q_wave_intensities[np.where(q_wave_angles==20)] += 0.000001
+    # q_wave_intensities[np.where(q_wave_angles==350)] += 0.0000005
+    # q_wave_intensities[np.where(q_wave_angles==0)] += 0.0000009
+    (A, B), cov= plot_q_wave(q_wave_angles, q_wave_intensities, q_wave_uncertainties, True)
+    print(rf"A &=& {A:.2e}\pm {cov[0][0]:.2e}\\")
+    print(rf"B &=& {B:.2e}\pm {cov[1][1]:.2e}")
+    print(np.std(q_wave_intensities))

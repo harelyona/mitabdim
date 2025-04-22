@@ -1,5 +1,7 @@
 import os
 
+import matplotlib.pyplot as plt
+
 from Malos import *
 
 # Plot constants
@@ -85,6 +87,7 @@ def plot_regular_with_fit(intensities_by_type: list[list[float]]):
     plt.title("Intensity vs Angle with Cos² Fit", fontsize=GRAPH_TITLE_SIZE)
     plt.legend()
     plt.tight_layout()
+    plt.savefig("figures" + os.sep + "half wave" + ".pdf", format="pdf")
     plt.show()
 
 
@@ -145,7 +148,6 @@ def plot_single_fit(intensities: list[float], angles_deg: list[float], label: st
 
     a, b, c = popt
     print(f"{label} Fit Params:\n  a = {a:.6f}\n  center = {b:.2f}°\n  offset = {c:.6f}")
-
     plt.xlabel(DEG_LABEL, fontsize=AXIS_LABEL_SIZE)
     plt.ylabel(INTENSITY_LABEL, fontsize=AXIS_LABEL_SIZE)
     plt.title(f"{label} - Cos² Fit", fontsize=GRAPH_TITLE_SIZE)
