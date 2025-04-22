@@ -15,7 +15,6 @@ q_wave_angles = np.array([340, 350, 0, 10, 20, 80, 90, 100, 250, 170, 180, 190,]
 if __name__ == "__main__":
     q_wave_uncertainties = extract_uncertainties_from_folder("q wave")[-12:]
     q_wave_intensities = extract_averages_from_folder("q wave")[-12:]
-    q_wave_angles = q_wave_angles[-12:]
     q_wave_intensities[0] += 0.000001
     q_wave_intensities[1] += 0.0000006
     q_wave_intensities[2] += 0.0000006
