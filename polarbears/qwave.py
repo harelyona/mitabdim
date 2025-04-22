@@ -1,6 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
-
 from Malos import *
 def plot_q_wave(angles:np.ndarray, intensities:np.ndarray, uncertainties:np.ndarray, save=False):
     coefficients, cov_mat = np.polyfit(angles, intensities, 1, cov=True)
@@ -19,7 +16,6 @@ if __name__ == "__main__":
     q_wave_uncertainties = extract_uncertainties_from_folder("q wave")[-12:]
     q_wave_intensities = extract_averages_from_folder("q wave")[-12:]
     q_wave_angles = q_wave_angles[-12:]
-    d = dict(zip(q_wave_angles, q_wave_intensities))
     q_wave_intensities[0] += 0.000001
     q_wave_intensities[1] += 0.0000006
     q_wave_intensities[2] += 0.0000006
