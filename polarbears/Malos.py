@@ -16,7 +16,7 @@ ERRORBARS_COLOR = "lightcoral"
 DATA_POINTs_SIZE = 7
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
-
+CAPSIZE = 5
 
 matplotlib.use('TkAgg')
 
