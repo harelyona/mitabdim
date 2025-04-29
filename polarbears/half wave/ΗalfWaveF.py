@@ -11,7 +11,7 @@ DATA_POINTs_SIZE = 5
 INTENSITY_LABEL = 'Intensity [V]'
 DEG_LABEL = "Angle [Deg]"
 DATA_COLOR = ["orange", "magenta", "red"]
-LABELS = ["No Angle", "30° Angle", "50° Angle"]
+LABELS = ["No Half plate", "Half plate in 30° Angle", "50° Angle"]
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
 
