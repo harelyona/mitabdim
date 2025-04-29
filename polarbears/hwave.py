@@ -31,3 +31,4 @@ if __name__== "__main__":
     print(rf"B &=& {B30:.2f}\pm {cov_mat30[1][1]:.2f}\\")
     print(rf"C &=& {C30:.2e}\pm {cov_mat30[2][2]:.2e}\\")
     print(B0 - B30)
+    
