@@ -16,7 +16,7 @@ ERRORBARS_COLOR = "lightcoral"
 DATA_POINTs_SIZE = 7
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
-
+CAPSIZE = 5
 
 matplotlib.use('TkAgg')
 
@@ -81,7 +81,6 @@ def plot_double_polarizers(angle_polarizer_list, averages_list, save=False):
     if save:
         plt.savefig(f"figures{os.sep}double polarizers.pdf", format="pdf")
     plt.show()
-    print(f"b is {B:.2e} pm {cov_mat[1][1]:.2e}")
     return A, cov_mat[0][0]
 
 def plot_config(xlabel, ylabel, title):
