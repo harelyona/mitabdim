@@ -4,25 +4,25 @@ VERTICAL_COLOR = "blue"
 HORIZONTAL_COLOR = "yellow"
 
 
-def rp(angle, nout) -> float:
+def rp(angle, nout, A) -> float:
     """Calculate the reflection coefficient for p-polarized light."""
     angle = np.deg2rad(angle)
     nin = 1
     numerator = nout * np.cos(angle) - nin * np.sqrt(1 - (nin / nout) ** 2 * np.sin(angle) ** 2)
     denominator = nout * np.cos(angle) + nin * np.sqrt(1 - (nin / nout) ** 2 * np.sin(angle) ** 2)
-    return abs(numerator / denominator)
+    return A*abs(numerator / denominator)
 
-def rs(angle,nout) -> float:
+def rs(angle,nout, A) -> float:
     """Calculate the reflection coefficient for s-polarized light."""
     angle = np.deg2rad(angle)
     nin = 1
     numerator = nin * np.cos(angle) - nout * np.sqrt(1 - (nin / nout) ** 2 * np.sin(angle) ** 2)
     denominator = nin * np.cos(angle) + nout * np.sqrt(1 - (nin / nout) ** 2 * np.sin(angle) ** 2)
-    return abs(numerator / denominator)
+    return A*abs(numerator / denominator)
 
 
 def plot_horizontal(angles: np.ndarray, intensities: np.ndarray, uncertainties: np.ndarray, save=False):
-    coefficients, cov_mat = curve_fit(rp, angles, intensities, bounds=(1, 10))
+    coefficients, cov_mat = curve_fit(rp, angles, intensities)
     x_fit = np.linspace(min(angles), max(angles), 1000)
     plt.plot(x_fit, rp(x_fit, *coefficients), color=HORIZONTAL_COLOR, label="horizontal fit")
     plt.errorbar(angles, intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=HORIZONTAL_COLOR,
@@ -33,7 +33,7 @@ def plot_horizontal(angles: np.ndarray, intensities: np.ndarray, uncertainties: 
     return coefficients, cov_mat
 
 def plot_vertical(angles: np.ndarray, intensities: np.ndarray, uncertainties: np.ndarray, save=False):
-    coefficients, cov_mat = curve_fit(rs, angles, intensities, bounds=(1, 10))
+    coefficients, cov_mat = curve_fit(rs, angles, intensities)
     x_fit = np.linspace(min(angles), max(angles), 1000)
     plt.plot(x_fit, rs(x_fit, *coefficients), color=VERTICAL_COLOR, label="vertical fit")
     plt.errorbar(angles, intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=VERTICAL_COLOR,

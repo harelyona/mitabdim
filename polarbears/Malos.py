@@ -16,7 +16,7 @@ DATA_POINTs_SIZE = 7
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
 CAPSIZE = 5
-LEGEND_SIZE = 12
+LEGEND_SIZE = 15
 matplotlib.use('TkAgg')
 
 def double_polarizers_ff(x, a, b):
