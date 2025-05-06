@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from Malos import *
 VERTICAL_COLOR = "blue"
-HORIZONTAL_COLOR = "yellow"
+HORIZONTAL_COLOR = "hotpink"
 
 
 def rp(angle, nout) -> float:
@@ -23,7 +23,7 @@ def rs(angle,nout) -> float:
 
 
 def plot_horizontal(angles: np.ndarray, intensities: np.ndarray, uncertainties: np.ndarray, save=False):
-    coefficients, cov_mat = curve_fit(rp, angles, intensities, bounds=(1, 10))
+    coefficients, cov_mat = curve_fit(rp, angles, intensities, p0=[1.03], bounds=(1, 10))
     x_fit = np.linspace(min(angles), max(angles), 1000)
     plt.plot(x_fit, rp(x_fit, *coefficients), color=HORIZONTAL_COLOR, label="horizontal fit")
     plt.errorbar(angles, intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=HORIZONTAL_COLOR,
@@ -34,7 +34,7 @@ def plot_horizontal(angles: np.ndarray, intensities: np.ndarray, uncertainties: 
     return coefficients, cov_mat
 
 def plot_vertical(angles: np.ndarray, intensities: np.ndarray, uncertainties: np.ndarray, save=False):
-    coefficients, cov_mat = curve_fit(rs, angles, intensities, bounds=(1, 10))
+    coefficients, cov_mat = curve_fit(rs, angles, intensities, p0=[1.73], bounds=(1, 10))
     x_fit = np.linspace(min(angles), max(angles), 1000)
     plt.plot(x_fit, rs(x_fit, *coefficients), color=VERTICAL_COLOR, label="vertical fit")
     plt.errorbar(angles, intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=VERTICAL_COLOR,
@@ -43,6 +43,7 @@ def plot_vertical(angles: np.ndarray, intensities: np.ndarray, uncertainties: np
     if save:
         plt.savefig(f"figures{os.sep}horizontal.pdf", format="pdf")
     return coefficients, cov_mat
+
 
 # Horizontal is p polarization
 # Vertical is s polarization

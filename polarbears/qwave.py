@@ -1,14 +1,21 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 from Malos import *
 def plot_q_wave(angles:np.ndarray, intensities:np.ndarray, uncertainties:np.ndarray, save=False):
     coefficients, cov_mat = np.polyfit(angles, intensities, 1, cov=True)
     ff = np.poly1d(coefficients)
     x_fit = np.linspace(min(angles), max(angles), 1000)
-    plt.plot(x_fit, ff(x_fit), color='black', label=rf'$I = {coefficients[0]:.2e} \theta + {coefficients[1]:.2e}$')
+    average_intensity = np.average(q_wave_intensities)
+    difference = cov_mat - average_intensity
+    plt.axhline(y=average_intensity, color='black', label='Average Intensity')
     plt.errorbar(q_wave_angles, q_wave_intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=DATA_COLOR, ecolor=ERRORBARS_COLOR, capsize=5, label='Measured Intensity', ms=DATA_POINTs_SIZE)
     plot_config(DEG_LABEL, INTENSITY_LABEL, "Intensity vs Angle")
+
     if save:
         plt.savefig(f"figures{os.sep}q wave.pdf", format="pdf")
     plt.show()
+
     return coefficients, cov_mat
 
 
@@ -49,7 +56,10 @@ def plot_q_wave_polar(angles: np.ndarray, intensities: np.ndarray, uncertainties
     return coefficients, cov_mat
 
 
-q_wave_angles = np.array([340, 350, 0, 10, 20, 80, 90, 100, 250, 170, 180, 190,])
+#q_wave_angles = np.array([340, 350, 0, 10, 20, 80, 90, 100, 250, 170, 180, 190])
+q_wave_angles = np.array([340, 10, 40, 70, 100, 130, 160, 190, 210, 240, 270, 300])
+
+
 if __name__ == "__main__":
     q_wave_uncertainties = extract_uncertainties_from_folder("q wave")[-12:]
     q_wave_intensities = extract_averages_from_folder("q wave")[-12:]
@@ -67,6 +77,8 @@ if __name__ == "__main__":
     # q_wave_intensities[np.where(q_wave_angles==20)] += 0.000001
     # q_wave_intensities[np.where(q_wave_angles==350)] += 0.0000005
     # q_wave_intensities[np.where(q_wave_angles==0)] += 0.0000009
+    print(len(q_wave_intensities))
+    print(len(q_wave_angles))
     (A, B), cov= plot_q_wave(q_wave_angles, q_wave_intensities, q_wave_uncertainties, True)
     plot_q_wave_polar(q_wave_angles, q_wave_intensities, q_wave_uncertainties, save=True)
     print(rf"A &=& {A:.2e}\pm {cov[0][0]:.2e}\\")
