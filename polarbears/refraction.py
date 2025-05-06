@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 
 from Malos import *
 VERTICAL_COLOR = "blue"

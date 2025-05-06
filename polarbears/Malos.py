@@ -3,7 +3,6 @@ import os
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from typing import Tuple
 from scipy.optimize import curve_fit
 
 GRAPH_TITLE_SIZE = 20
@@ -17,7 +16,7 @@ DATA_POINTs_SIZE = 7
 FIGURE_SIZE = (8, 6)
 AXIS_LABEL_SIZE = 20
 CAPSIZE = 5
-
+LEGEND_SIZE = 12
 matplotlib.use('TkAgg')
 
 def double_polarizers_ff(x, a, b):
@@ -87,7 +86,7 @@ def plot_config(xlabel, ylabel, title):
     plt.xlabel(xlabel, size=AXIS_LABEL_SIZE)
     plt.ylabel(ylabel, size=AXIS_LABEL_SIZE)
     plt.title(title, size=GRAPH_TITLE_SIZE)
-    plt.legend()
+    plt.legend(fontsize=LEGEND_SIZE)
     plt.grid(True)
     plt.tight_layout()
     plt.gca().tick_params(axis='both', which='major', labelsize=15)
