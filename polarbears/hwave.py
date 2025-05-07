@@ -13,7 +13,7 @@ def plot_half_wave(angles:np.ndarray, intensities:np.ndarray, uncertainties:np.n
 
     plt.errorbar(angles, intensities, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties, fmt='o', color=DATA_COLOR, ecolor=ERRORBARS_COLOR, capsize=5, label='30 angle', ms=DATA_POINTs_SIZE)
     x_fit = np.linspace(min(angles), max(angles), 1000)
-    plt.plot(x_fit, half_wave_ff(x_fit, *coefficients30_deg), color='black', label=rf'$I = {coefficients30_deg[0]:.2e} \cos^2(\theta + {coefficients30_deg[1]:.2f}) + {coefficients30_deg[2]:.2e}$')
+    plt.plot(x_fit, half_wave_ff(x_fit, *coefficients30_deg), color='blue', label=rf'$I = {coefficients30_deg[0]:.2e} \cos^2(\theta + {coefficients30_deg[1]:.2f}) + {coefficients30_deg[2]:.2e}$')
     plt.errorbar(angles, intensities0deg, xerr=ANGLE_UNCERTAINTY, yerr=uncertainties_0deg, fmt='o', color="red", ecolor=ERRORBARS_COLOR, capsize=5, label='no angle', ms=DATA_POINTs_SIZE)
     plt.plot(x_fit, half_wave_ff(x_fit, *coefficients0_deg), color='red', label=rf'$I = {coefficients0_deg[0]:.2e} \cos^2(\theta - {coefficients0_deg[1]:.2f}) + {coefficients0_deg[2]:.2e}$')
     plot_config(DEG_LABEL, INTENSITY_LABEL, "Intensity vs Angle")
@@ -30,5 +30,6 @@ if __name__== "__main__":
     print(rf"A &=& {A30:.2e}\pm {cov_mat30[0][0]:.2e}\\")
     print(rf"B &=& {B30:.2f}\pm {cov_mat30[1][1]:.2f}\\")
     print(rf"C &=& {C30:.2e}\pm {cov_mat30[2][2]:.2e}\\")
-    print(B0 - B30)
+    print(fr"{B0:.3f}\pm{cov_mat0[1][1]:.3f}")
+    print(fr"{B0 + B30} \pm {cov_mat0[1][1] + cov_mat30[1][1]}")
     
