@@ -2,6 +2,7 @@ from Malos import *
 #2dsin(theta) = n * lambda
 FREQUENCY = 10.5 * 10**9
 WAVELENGTH = 3 * 10**8 / FREQUENCY
+
 def extract_intensity(file: str) -> float:
     df = pd.read_csv(file)
     intensities = df.iloc[:, 4]  # Column B (index 1)
@@ -26,9 +27,7 @@ def data_from_folder(folder: str)-> tuple[np.ndarray, np.ndarray, np.ndarray]:
 
     return np.array(angles), np.array(intensities), np.array(uncertainties)
 
-if __name__ == "__main__":
-    file = f"2 polarizers micro{os.sep}0.csv"
-    folder = "2 polarizers micro"
+def plot_2_polarizers(folder: str, save: bool = False) -> None:
     angles, intensities, uncertainties = data_from_folder(folder)
     plt.errorbar(
         angles,
@@ -41,4 +40,11 @@ if __name__ == "__main__":
         label="data",
         ms=DATA_POINTs_SIZE
     )
+    if save:
+        plt.savefig(f"{folder}{os.sep}2_polarizers_micro.png",)
     plt.show()
+
+
+
+if __name__ == "__main__":
+    plot_2_polarizers("bragg2")
