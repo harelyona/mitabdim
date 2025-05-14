@@ -1,7 +1,10 @@
+import numpy as np
+
 from Malos import *
 #2dsin(theta) = n * lambda
 FREQUENCY = 10.5 * 10**9
 WAVELENGTH = 3 * 10**8 / FREQUENCY
+d = 0.04
 
 def extract_intensity(file: str) -> float:
     df = pd.read_csv(file)
@@ -29,6 +32,8 @@ def data_from_folder(folder: str)-> tuple[np.ndarray, np.ndarray, np.ndarray]:
 
 def plot_2_polarizers(folder: str, save: bool = False) -> None:
     angles, intensities, uncertainties = data_from_folder(folder)
+    #intensities[np.where(angles == 66)[0][0]] *= 3
+
     plt.errorbar(
         angles,
         intensities,
@@ -48,3 +53,5 @@ def plot_2_polarizers(folder: str, save: bool = False) -> None:
 
 if __name__ == "__main__":
     plot_2_polarizers("bragg2")
+    x = np.array([11, 2, 3, 4, 5, 6, 7, 8, 1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
+    y = np.where(x == 1)[0][0]
