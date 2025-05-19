@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+
 GRAPH_TITLE_SIZE = 20
 INTENSITY_LABEL = 'Intensity [V]'
 DEG_LABEL = "Angle [Deg]"
