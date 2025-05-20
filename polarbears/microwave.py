@@ -58,7 +58,7 @@ def plot_2_polarizers(folder: str, save: bool = False) -> Tuple[float, float, fl
     plt.show()
     return A, cov_mat[0][0], B, cov_mat[1][1]
 
-def plot_bragg(folder: str, save: bool = False) -> None:
+def plot_bragg(folder: str = "bragg2", save: bool = False) -> None:
     angles, intensities, uncertainties = data_from_folder(folder)
     angles = 90 - angles
     intensities[27] *= 3
@@ -66,7 +66,7 @@ def plot_bragg(folder: str, save: bool = False) -> None:
     intensities[29] *= 3
     params, cov_mat = curve_fit(sinc, angles, intensities,p0=[1, 65, 0])
     x_fit = np.linspace(min(angles), max(angles), 1000)
-    plt.plot(x_fit, sinc(x_fit, *params), color=FIT_COLOR, label="fit")
+    #plt.plot(x_fit, sinc(x_fit, *params), color=FIT_COLOR, label="fit")
     plt.errorbar(
         angles,
         intensities,
@@ -81,11 +81,20 @@ def plot_bragg(folder: str, save: bool = False) -> None:
     if save:
         plt.savefig(f"plots{os.sep}bragg.png",)
     plot_config(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    print(np.sort(angles))
     plt.show()
 
 
 
+# 2dsin(theta) = n * lambda
+# n = 2 * d * sin(theta) / lambda
+# sin(theta) = n * lambda / (2 * d)
 if __name__ == "__main__":
-    A, A_error, B, B_error = plot_2_polarizers("2 polarizers micro", True)
-    print(rf"A &=& {A:.2e} \pm {A_error:.2e}\\")
-    print(rf"B &=& {B:.2e} \pm {B_error:.2e}\\")
+    # A, A_error, B, B_error = plot_2_polarizers("2 polarizers micro", True)
+    # print(rf"A &=& {A:.2e} \pm {A_error:.2e}\\")
+    # print(rf"B &=& {B:.2e} \pm {B_error:.2e}\\")
+
+    peak_angles = np.sort(np.array([24, 47, 6, 16, 57]))
+    n = 2 * d * np.sin(np.radians(peak_angles)) / WAVELENGTH
+    print(n)
+
