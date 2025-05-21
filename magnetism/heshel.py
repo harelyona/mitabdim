@@ -1,2 +1,3 @@
-base_resistance1 = 16
-base_resistance2 = 20000
+
+base_resistance = 20000
+cahnging_blates_resistance = 4016
