@@ -78,7 +78,7 @@ def plot_bragg(folder: str = "bragg2", save: bool = False) -> None:
     )
     if save:
         plt.savefig(f"plots{os.sep}bragg.png",)
-    plot_config(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
+    plot_config(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Angle of incident')
     plt.show()
 
 def arcsin(x: float) -> float:
