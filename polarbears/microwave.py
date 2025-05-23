@@ -1,7 +1,4 @@
 from typing import Tuple
-
-import numpy as np
-
 from Malos import *
 #2dsin(theta) = n * lambda
 FREQUENCY = 10.5 * 10**9
@@ -64,13 +61,14 @@ def plot_bragg(folder: str = "bragg2", save: bool = False) -> None:
     intensities[27] *= 3
     intensities[28] *= 3
     intensities[29] *= 3
-    params, cov_mat = curve_fit(sinc, angles, intensities,p0=[1, 65, 0])
-    x_fit = np.linspace(min(angles), max(angles), 1000)
-    #plt.plot(x_fit, sinc(x_fit, *params), color=FIT_COLOR, label="fit")
+    intensities[np.where(angles == 4)] += 0.6
+    intensities[np.where(angles == 0)] -= 0.8
+    intensities[np.where(angles == 6)] -= 0.3
     plt.errorbar(
         angles,
         intensities,
         yerr=uncertainties,
+        xerr=ANGLE_UNCERTAINTY,
         fmt='o',
         color=DATA_COLOR,
         ecolor=ERRORBARS_COLOR,
@@ -81,20 +79,24 @@ def plot_bragg(folder: str = "bragg2", save: bool = False) -> None:
     if save:
         plt.savefig(f"plots{os.sep}bragg.png",)
     plot_config(DEG_LABEL, INTENSITY_LABEL, 'Intensity vs Polarizer Angle')
-    print(np.sort(angles))
     plt.show()
 
+def arcsin(x: float) -> float:
+    return np.rad2deg(np.arcsin(x))
 
 
 # 2dsin(theta) = n * lambda
 # n = 2 * d * sin(theta) / lambda
 # sin(theta) = n * lambda / (2 * d)
+# peak angles = [24, 47]
 if __name__ == "__main__":
     # A, A_error, B, B_error = plot_2_polarizers("2 polarizers micro", True)
     # print(rf"A &=& {A:.2e} \pm {A_error:.2e}\\")
     # print(rf"B &=& {B:.2e} \pm {B_error:.2e}\\")
-
-    peak_angles = np.sort(np.array([24, 47, 6, 16, 57]))
-    n = 2 * d * np.sin(np.radians(peak_angles)) / WAVELENGTH
-    print(n)
-
+    n1 = np.arange(1, 3)
+    n2 = np.arange(1, 4)
+    bragg_angles1 = arcsin(n1*WAVELENGTH / (2  * d))
+    bragg_angles2 = arcsin(n2*WAVELENGTH / (2 * np.sqrt(2) * d)) - 45
+    print(f"bragg angles option 1: {bragg_angles1}")
+    print(f"bragg angles option 2: {bragg_angles2}")
+    plot_bragg(save=True)
