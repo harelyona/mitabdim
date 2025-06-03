@@ -37,7 +37,7 @@ def plot_2_polarizers(folder: str, save: bool = False) -> Tuple[float, float, fl
     intensities[np.where(angles == 90)] -= 0.05
     x_fit = np.linspace(min(angles), max(angles), 1000)
     A, B = params[0], params[1]
-    plt.plot(x_fit, double_polarizers_ff(x_fit, *params), color=FIT_COLOR, label=rf'$I = {A:.2e} \cos^2(\theta) + {B:.2e}$')
+    plt.plot(x_fit, double_polarizers_ff(x_fit, *params), color=FIT_COLOR, label=rf'$I = 2.1e \cos^2(\theta) + {B:.1e}$')
     plt.errorbar(
         angles,
         intensities,
@@ -90,9 +90,9 @@ def arcsin(x: float) -> float:
 # sin(theta) = n * lambda / (2 * d)
 # peak angles = [24, 47]
 if __name__ == "__main__":
-    # A, A_error, B, B_error = plot_2_polarizers("2 polarizers micro", True)
-    # print(rf"A &=& {A:.2e} \pm {A_error:.2e}\\")
-    # print(rf"B &=& {B:.2e} \pm {B_error:.2e}\\")
+    A, A_error, B, B_error = plot_2_polarizers("2 polarizers micro", True)
+    print(rf"A &=& {A:.2e} \pm {A_error:.2e}\\")
+    print(rf"B &=& {B:.2e} \pm {B_error:.2e}\\")
     n1 = np.arange(1, 3)
     n2 = np.arange(1, 4)
     bragg_angles1 = arcsin(n1*WAVELENGTH / (2  * d))
