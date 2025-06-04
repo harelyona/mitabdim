@@ -45,7 +45,7 @@ def plot_heshels(folder: str, save: bool=False):
     for file in files:
         times, v1, v2 = extract_voltages(os.path.join(folder, file))
         plt.scatter(v1, v2, label=file[:-4] + '$\\Omega$', s=DATA_SIZE)
-    plot_config('V1 [V]', 'V2 [V]', 'Heshel Loops Over Different Resistances')
+    plot_config('H [V]', 'B [V]', 'Heshel Loops Over Different Resistances')
     if save:
         plt.savefig(f"plots{os.sep}heshel_loops.png", dpi=300)
     plt.show()
@@ -56,12 +56,13 @@ def plot_heshel_plates(folder: str="heshel vs plates", save: bool=False):
     for file in files:
         times, v1, v2 = extract_voltages(os.path.join(folder, file))
         plt.scatter(v1, v2, label=file[:-4], s=DATA_SIZE)
-    plot_config('V1 [V]', 'V2 [V]', 'Heshel Loops Over Different Plates')
+    plot_config('H [V]', 'B [V]', 'Heshel Loops Over Different Plates')
     plt.show()
 
 
 
 if __name__ == "__main__":
-    plot_heshels("heshel vs resistance", True)
-    print(plot_heshel_plates())
-
+    plot_heshels("different materials same R", True)
+    plot_heshels("different R material 1", True)
+    plot_heshels("different R material 2", True)
+    plot_heshels("different R material 3", True)
