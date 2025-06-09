@@ -28,10 +28,9 @@ def main():
     for num in range(len(img1_numbers)):
         # Create the file name pattern, without zero-padding the number, and check for both .png and .bmp extensions
         png_filename = os.path.join(image_directory, f'grant_*_v_mes_{num}.jpg')
-        bmp_filename = os.path.join(image_directory, f'grant_*_v_mes_{num}.bmp')
         # grant_5_v_mes_1.png
         # Find the files that match the pattern
-        image_files = glob.glob(png_filename) + glob.glob(bmp_filename)
+        image_files = glob.glob(png_filename)
 
         # If there's at least one matching file
         if image_files:
@@ -72,7 +71,7 @@ def main():
             except Exception as e:
                 print(f"Failed to process {image_file}: {e}")
         else:
-            print(f"No file found for: {png_filename} or {bmp_filename}")
+            print(f"No file found for: {png_filename}")
 
     # Extract the data for plotting
     star_values = [data['star_value'] for data in area_data]
