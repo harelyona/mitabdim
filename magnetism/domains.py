@@ -1,6 +1,5 @@
 import glob
 import os
-
 import numpy as np
 from matplotlib import pyplot as plt, rc, use
 from skimage import io, color, filters
